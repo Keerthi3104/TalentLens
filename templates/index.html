@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TalentLens — Smart Career Platform</title>
+<link rel="stylesheet" href="/static/css/style.css">
+<link href="https://fonts.googleapis.com/css2?family=Clash+Display:wght@400;500;600;700&family=Satoshi:wght@300;400;500;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+</head>
+<body>
+
+<!-- ── NAVBAR ── -->
+<nav>
+  <div class="nav-logo" onclick="goTo('analyzer')">🎯 TalentLens</div>
+  <div class="nav-links">
+    <span id="backendIndicator" class="backend-badge">⏳ Checking backend…</span>
+    <button class="nav-btn active" id="nb-analyzer" onclick="goTo('analyzer')">Score Analyzer</button>
+    <button class="nav-btn" id="nb-careers" onclick="goTo('careers')">Careers</button>
+    <button class="nav-btn" id="nb-recruiter" onclick="goTo('recruiter')">Recruiter</button>
+    <button class="nav-cta" onclick="goTo('careers')">Browse Jobs →</button>
+  </div>
+</nav>
+
+<!-- ═════════════════════════════════════════════
+     PAGE 1 — SCORE ANALYZER
+═════════════════════════════════════════════ -->
+<div class="page active pw" id="pg-analyzer">
+  <div class="hero-band">
+    <div class="hero-chip">⚡ AI-Powered Career Intelligence</div>
+    <h1 class="hero-title">Know Your <span>Exact Score</span><br>Before You Apply</h1>
+    <p class="hero-sub">Paste your links, upload your resume — get an instant AI analysis with actionable steps to improve.</p>
+  </div>
+
+  <div class="analyzer-wrap">
+    <!-- LEFT: Form -->
+    <div class="analyzer-form-col">
+      <div class="acard">
+        <div class="acard-title">Personal Info</div>
+        <div class="fg-row">
+          <div class="fg"><div class="flabel">Full Name</div><input class="finput" id="a-name" placeholder="Arjun Sharma"></div>
+          <div class="fg"><div class="flabel">Email</div><input class="finput" id="a-email" type="email" placeholder="arjun@email.com"></div>
+        </div>
+        <div class="fg-row">
+          <div class="fg"><div class="flabel">Phone</div><input class="finput" id="a-phone" placeholder="+91 98765 43210"></div>
+          <div class="fg"><div class="flabel">Experience</div>
+            <select class="finput" id="a-exp">
+              <option value="" disabled selected>Select experience</option>
+              <option value="0">🌱 Fresher (0 years)</option>
+              <option value="1">1 year</option>
+              <option value="2">2 years</option>
+              <option value="3">3 years</option>
+              <option value="4">4 years</option>
+              <option value="5">5 years</option>
+              <option value="6">6 years</option>
+              <option value="7">7 years</option>
+              <option value="8">8 years</option>
+              <option value="9">9 years</option>
+              <option value="10">10 years</option>
+              <option value="12">12 years</option>
+              <option value="15">15 years</option>
+              <option value="20">20+ years</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="acard">
+        <div class="acard-title">Professional Links</div>
+        <div class="fg"><div class="flabel">LinkedIn URL</div><input class="finput" id="a-li" placeholder="https://linkedin.com/in/yourprofile"></div>
+        <div class="fg"><div class="flabel">GitHub URL</div><input class="finput" id="a-gh" placeholder="https://github.com/yourusername"></div>
+        <div class="fg" style="margin-bottom:0"><div class="flabel">Key Skills</div><input class="finput" id="a-skills" placeholder="React, Node.js, Python, AWS, Docker…"></div>
+      </div>
+
+      <div class="acard">
+        <div class="acard-title">Resume Upload</div>
+        <div class="upload-area" id="uploadArea">
+          <input type="file" id="a-resume" accept=".pdf,.doc,.docx" onchange="onFileChange(this)">
+          <div class="upload-ico">📎</div>
+          <div class="upload-txt"><strong>Click or drag</strong> to upload resume</div>
+          <div class="upload-txt">PDF, DOC, DOCX · max 5MB</div>
+          <div class="file-ok" id="fileOk">✓ <span id="fileName"></span></div>
+        </div>
+      </div>
+
+      <div class="acard">
+        <div class="acard-title">About You</div>
+        <div class="fg" style="margin-bottom:0">
+          <div class="flabel">Professional Summary</div>
+          <textarea class="finput ftarea" id="a-summary" placeholder="Brief summary of your background, tech stack, and career goals…"></textarea>
+        </div>
+      </div>
+
+      <button class="btn-analyze" id="analyzeBtn" onclick="runAnalysis()">⚡ Analyse My Profile</button>
+    </div>
+
+    <!-- RIGHT: Results -->
+    <div class="analyzer-result-col">
+      <div class="acard" id="scoreCard">
+        <div class="acard-title">Profile Scores</div>
+        <div id="scoreContent">
+          <div class="empty-state"><div class="empty-ico">📊</div>Your scores will appear here after analysis</div>
+        </div>
+      </div>
+
+      <div class="acard" id="roleCard">
+        <div class="acard-title">Role Fit Probability</div>
+        <div id="roleContent">
+          <div class="empty-state"><div class="empty-ico">🎯</div>Role fit analysis will appear here</div>
+        </div>
+      </div>
+
+      <div class="acard" id="sugCard">
+        <div class="acard-title">AI Improvement Suggestions</div>
+        <div id="sugContent">
+          <div class="empty-state"><div class="empty-ico">💡</div>Personalized tips will appear after analysis</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="site-footer">
+    <div class="footer-top">
+      <div>
+        <div class="footer-brand-logo">🎯 TalentLens</div>
+        <div class="footer-brand-desc">AI-powered career intelligence platform helping professionals land their dream jobs at top IT companies across India.</div>
+        <div class="footer-social">
+          <a class="footer-social-btn" title="LinkedIn">💼</a>
+          <a class="footer-social-btn" title="Twitter">🐦</a>
+          <a class="footer-social-btn" title="GitHub">🐙</a>
+          <a class="footer-social-btn" title="Instagram">📸</a>
+        </div>
+      </div>
+      <div>
+        <div class="footer-col-title fc-blue">Features</div>
+        <div class="footer-links">
+          <span class="footer-link" onclick="goTo('analyzer')">⚡ Score Analyzer</span>
+          <span class="footer-link" onclick="goTo('careers')">🏢 Job Listings</span>
+          <span class="footer-link" onclick="goTo('recruiter')">📊 Recruiter Dashboard</span>
+          <span class="footer-link">🤖 AI Resume Builder <span class="soon-tag">Soon</span></span>
+          <span class="footer-link">📝 Cover Letter Gen <span class="soon-tag">Soon</span></span>
+        </div>
+      </div>
+      <div>
+        <div class="footer-col-title fc-purple">Resources</div>
+        <div class="footer-links">
+          <span class="footer-link">📖 About TalentLens</span>
+          <span class="footer-link">❓ FAQ</span>
+          <span class="footer-link">📣 Blog</span>
+          <span class="footer-link">🔒 Privacy Policy</span>
+          <span class="footer-link">📋 Terms of Service</span>
+        </div>
+      </div>
+      <div>
+        <div class="footer-col-title fc-amber">Created By</div>
+        <div class="footer-contact-item"><span class="footer-contact-ico">🎓</span><span>Final Year Project</span></div>
+        <div class="footer-contact-item"><span class="footer-contact-ico">👩‍💻</span><span>Sivasakthi K</span></div>
+        <div class="footer-contact-item"><span class="footer-contact-ico">👩‍💻</span><span>Janani C</span></div>
+        <div class="footer-contact-item"><span class="footer-contact-ico">👩‍💻</span><span>Keerthika K</span></div>
+        <div class="footer-contact-item"><span class="footer-contact-ico">👩‍💻</span><span>Keerthika R</span></div>
+        <div class="footer-contact-item"><span class="footer-contact-ico">🏛️</span><span>Annamalai University</span></div>
+        <div class="footer-contact-item"><span class="footer-contact-ico">📍</span><span>Chidambaram, Cuddalore Dist</span></div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="footer-copy">© 2025 TalentLens. Made with <span>♥</span> in India. All rights reserved.</div>
+      <div class="footer-policy-links">
+        <span class="footer-policy-link">Privacy Policy</span>
+        <span class="footer-policy-link">Terms of Service</span>
+      </div>
+    </div>
+  </footer>
+</div>
+
+<!-- ═════════════════════════════════════════════
+     PAGE 2 — CAREERS
+═════════════════════════════════════════════ -->
+<div class="page pw" id="pg-careers">
+  <div class="careers-hero">
+    <div class="hero-chip">🏢 Top IT Companies Hiring Now</div>
+    <h1>Find Your Dream Job</h1>
+    <p>Explore openings at India's leading IT companies. Limited seats — apply before they fill up.</p>
+    <div class="filter-bar">
+      <div class="filter-chip on" onclick="filterCo('all',this)">All Companies</div>
+      <div class="filter-chip" onclick="filterCo('product',this)">Product</div>
+      <div class="filter-chip" onclick="filterCo('service',this)">Services</div>
+      <div class="filter-chip" onclick="filterCo('mnc',this)">MNC</div>
+      <div class="filter-chip" onclick="filterCo('startup',this)">Startup</div>
+    </div>
+  </div>
+  <div class="companies-grid" id="companiesGrid"></div>
+
+  <footer class="site-footer">
+    <div class="footer-top">
+      <div>
+        <div class="footer-brand-logo">🎯 TalentLens</div>
+        <div class="footer-brand-desc">AI-powered career intelligence platform helping professionals land their dream jobs at top IT companies across India.</div>
+        <div class="footer-social">
+          <a class="footer-social-btn">💼</a><a class="footer-social-btn">🐦</a>
+          <a class="footer-social-btn">🐙</a><a class="footer-social-btn">📸</a>
+        </div>
+      </div>
+      <div>
+        <div class="footer-col-title fc-blue">Features</div>
+        <div class="footer-links">
+          <span class="footer-link" onclick="goTo('analyzer')">⚡ Score Analyzer</span>
+          <span class="footer-link" onclick="goTo('careers')">🏢 Job Listings</span>
+          <span class="footer-link" onclick="goTo('recruiter')">📊 Recruiter Dashboard</span>
+        </div>
+      </div>
+      <div>
+        <div class="footer-col-title fc-purple">Resources</div>
+        <div class="footer-links">
+          <span class="footer-link">📖 About TalentLens</span>
+          <span class="footer-link">❓ FAQ</span>
+          <span class="footer-link">🔒 Privacy Policy</span>
+        </div>
+      </div>
+      <div>
+        <div class="footer-col-title fc-amber">Created By</div>
+        <div class="footer-contact-item"><span class="footer-contact-ico">🎓</span><span>Final Year Project</span></div>
+        <div class="footer-contact-item"><span class="footer-contact-ico">👩‍💻</span><span>Sivasakthi K</span></div>
+        <div class="footer-contact-item"><span class="footer-contact-ico">👩‍💻</span><span>Janani C</span></div>
+        <div class="footer-contact-item"><span class="footer-contact-ico">👩‍💻</span><span>Keerthika K</span></div>
+        <div class="footer-contact-item"><span class="footer-contact-ico">👩‍💻</span><span>Keerthika R</span></div>
+        <div class="footer-contact-item"><span class="footer-contact-ico">🏛️</span><span>Annamalai University, Chidambaram</span></div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="footer-copy">© 2025 TalentLens. Made with <span>♥</span> in India.</div>
+      <div class="footer-policy-links">
+        <span class="footer-policy-link">Privacy Policy</span>
+        <span class="footer-policy-link">Terms of Service</span>
+      </div>
+    </div>
+  </footer>
+</div>
+
+<!-- ═════════════════════════════════════════════
+     PAGE 3 — JOB DETAIL + APPLY
+═════════════════════════════════════════════ -->
+<div class="page pw" id="pg-job">
+  <div class="job-detail-wrap">
+    <div class="back-link" onclick="goTo('careers')">← Back to Companies</div>
+    <div class="jd-header" id="jdHeader"></div>
+    <div class="jd-slots" id="jdSlots"></div>
+
+    <div class="apply-form-card" id="applyFormCard">
+      <div class="af-title">Apply Now</div>
+      <div class="af-sub">Fill in your details below. Limited seats — submit before they're gone.</div>
+      <div class="af-grid2">
+        <div class="fg"><div class="flabel">Full Name *</div><input class="finput" id="ap-name" placeholder="Arjun Sharma"></div>
+        <div class="fg"><div class="flabel">Email *</div><input class="finput" id="ap-email" type="email" placeholder="arjun@email.com"></div>
+      </div>
+      <div class="af-grid2">
+        <div class="fg"><div class="flabel">Phone *</div><input class="finput" id="ap-phone" placeholder="+91 98765 43210"></div>
+        <div class="fg"><div class="flabel">Experience</div>
+          <select class="finput" id="ap-exp">
+            <option value="" disabled selected>Select experience</option>
+            <option value="0">🌱 Fresher (0 years)</option>
+            <option value="1">1 year</option><option value="2">2 years</option>
+            <option value="3">3 years</option><option value="4">4 years</option>
+            <option value="5">5 years</option><option value="6">6 years</option>
+            <option value="7">7 years</option><option value="8">8 years</option>
+            <option value="9">9 years</option><option value="10">10 years</option>
+            <option value="12">12 years</option><option value="15">15 years</option>
+            <option value="20">20+ years</option>
+          </select>
+        </div>
+      </div>
+      <div class="af-grid2">
+        <div class="fg"><div class="flabel">LinkedIn URL</div><input class="finput" id="ap-li" placeholder="https://linkedin.com/in/…"></div>
+        <div class="fg"><div class="flabel">GitHub URL</div><input class="finput" id="ap-gh" placeholder="https://github.com/…"></div>
+      </div>
+      <div class="af-grid1">
+        <div class="fg"><div class="flabel">Key Skills</div><input class="finput" id="ap-skills" placeholder="React, Node.js, Python, AWS…"></div>
+      </div>
+      <div class="af-grid1">
+        <div class="fg"><div class="flabel">Resume (PDF/DOC)</div>
+          <div class="upload-area" id="apUploadArea" style="padding:0.9rem">
+            <input type="file" id="ap-resume" accept=".pdf,.doc,.docx" onchange="onApFileChange(this)">
+            <div class="upload-txt"><strong>Drop resume here</strong> or click to browse</div>
+            <div class="file-ok" id="apFileOk">✓ <span id="apFileName"></span></div>
+          </div>
+        </div>
+      </div>
+      <div class="af-grid1">
+        <div class="fg" style="margin-bottom:0">
+          <div class="flabel">Cover Note</div>
+          <textarea class="finput ftarea" id="ap-cover" placeholder="Briefly explain why you're a great fit for this role…"></textarea>
+        </div>
+      </div>
+      <div style="margin-top:1.25rem">
+        <button class="btn-apply" id="applyBtn" onclick="submitApplication()">Submit Application →</button>
+      </div>
+    </div>
+
+    <div class="success-card" id="successCard">
+      <div class="success-ico">🎉</div>
+      <div class="success-title">Application Submitted!</div>
+      <div class="success-sub" id="successMsg"></div>
+      <button class="btn-analyze" style="margin-top:1.2rem;max-width:220px" onclick="goTo('careers')">Browse More Jobs</button>
+    </div>
+
+    <footer class="site-footer" style="margin-top:3rem">
+      <div class="footer-top">
+        <div>
+          <div class="footer-brand-logo">🎯 TalentLens</div>
+          <div class="footer-brand-desc">AI-powered career intelligence platform.</div>
+          <div class="footer-social">
+            <a class="footer-social-btn">💼</a><a class="footer-social-btn">🐦</a>
+            <a class="footer-social-btn">🐙</a><a class="footer-social-btn">📸</a>
+          </div>
+        </div>
+        <div>
+          <div class="footer-col-title fc-blue">Features</div>
+          <div class="footer-links">
+            <span class="footer-link" onclick="goTo('analyzer')">⚡ Score Analyzer</span>
+            <span class="footer-link" onclick="goTo('careers')">🏢 Job Listings</span>
+            <span class="footer-link" onclick="goTo('recruiter')">📊 Recruiter Dashboard</span>
+          </div>
+        </div>
+        <div>
+          <div class="footer-col-title fc-purple">Resources</div>
+          <div class="footer-links">
+            <span class="footer-link">📖 About TalentLens</span>
+            <span class="footer-link">❓ FAQ</span>
+            <span class="footer-link">🔒 Privacy Policy</span>
+          </div>
+        </div>
+        <div>
+          <div class="footer-col-title fc-amber">Created By</div>
+          <div class="footer-contact-item"><span class="footer-contact-ico">🎓</span><span>Final Year Project</span></div>
+          <div class="footer-contact-item"><span class="footer-contact-ico">👩‍💻</span><span>Sivasakthi K</span></div>
+          <div class="footer-contact-item"><span class="footer-contact-ico">👩‍💻</span><span>Janani C</span></div>
+          <div class="footer-contact-item"><span class="footer-contact-ico">👩‍💻</span><span>Keerthika K</span></div>
+          <div class="footer-contact-item"><span class="footer-contact-ico">👩‍💻</span><span>Keerthika R</span></div>
+          <div class="footer-contact-item"><span class="footer-contact-ico">🏛️</span><span>Annamalai University, Chidambaram</span></div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <div class="footer-copy">© 2025 TalentLens. Made with <span>♥</span> in India.</div>
+      </div>
+    </footer>
+  </div>
+</div>
+
+<!-- ═════════════════════════════════════════════
+     PAGE 4 — RECRUITER DASHBOARD
+═════════════════════════════════════════════ -->
+<div class="page pw" id="pg-recruiter">
+  <div class="recruiter-wrap">
+    <div class="rec-header">
+      <div>
+        <div class="rec-title">Recruiter Dashboard</div>
+        <div class="rec-sub">Review and rank applicants by AI-scored profile quality</div>
+      </div>
+      <div style="display:flex;gap:0.6rem;align-items:center">
+        <button class="btn-export" onclick="exportCSV()">⬇ Export CSV</button>
+        <button class="btn-clear" onclick="openClearModal()">🗑 Clear Page</button>
+      </div>
+    </div>
+
+    <div class="company-selector" id="recCompanySelector"></div>
+
+    <div class="table-wrap">
+      <div class="table-toolbar">
+        <div class="table-toolbar-left">Applicants <span class="tcount" id="appCount">0</span></div>
+        <input class="table-search" id="tableSearch" placeholder="Search by name, skills…" oninput="filterTable()">
+      </div>
+      <div style="overflow-x:auto">
+        <table id="appTable">
+          <thead>
+            <tr>
+              <th onclick="sortTable('name')">Candidate <span class="sort-ico">↕</span></th>
+              <th onclick="sortTable('experience')">Exp <span class="sort-ico">↕</span></th>
+              <th onclick="sortTable('resume')">Resume <span class="sort-ico">↕</span></th>
+              <th onclick="sortTable('linkedin')">LinkedIn <span class="sort-ico">↕</span></th>
+              <th onclick="sortTable('github')">GitHub <span class="sort-ico">↕</span></th>
+              <th onclick="sortTable('overall')">Overall <span class="sort-ico">↕</span></th>
+              <th>LinkedIn Profile</th>
+              <th>AI Record</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="appTbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <footer class="site-footer" style="margin-top:3rem">
+      <div class="footer-top">
+        <div>
+          <div class="footer-brand-logo">🎯 TalentLens</div>
+          <div class="footer-brand-desc">AI-powered career intelligence platform.</div>
+          <div class="footer-social">
+            <a class="footer-social-btn">💼</a><a class="footer-social-btn">🐦</a>
+            <a class="footer-social-btn">🐙</a><a class="footer-social-btn">📸</a>
+          </div>
+        </div>
+        <div>
+          <div class="footer-col-title fc-blue">Features</div>
+          <div class="footer-links">
+            <span class="footer-link" onclick="goTo('analyzer')">⚡ Score Analyzer</span>
+            <span class="footer-link" onclick="goTo('careers')">🏢 Job Listings</span>
+            <span class="footer-link" onclick="goTo('recruiter')">📊 Recruiter Dashboard</span>
+          </div>
+        </div>
+        <div>
+          <div class="footer-col-title fc-purple">Resources</div>
+          <div class="footer-links">
+            <span class="footer-link">📖 About TalentLens</span>
+            <span class="footer-link">❓ FAQ</span>
+            <span class="footer-link">🔒 Privacy Policy</span>
+          </div>
+        </div>
+        <div>
+          <div class="footer-col-title fc-amber">Created By</div>
+          <div class="footer-contact-item"><span class="footer-contact-ico">🎓</span><span>Final Year Project</span></div>
+          <div class="footer-contact-item"><span class="footer-contact-ico">👩‍💻</span><span>Sivasakthi K</span></div>
+          <div class="footer-contact-item"><span class="footer-contact-ico">👩‍💻</span><span>Janani C</span></div>
+          <div class="footer-contact-item"><span class="footer-contact-ico">👩‍💻</span><span>Keerthika K</span></div>
+          <div class="footer-contact-item"><span class="footer-contact-ico">👩‍💻</span><span>Keerthika R</span></div>
+          <div class="footer-contact-item"><span class="footer-contact-ico">🏛️</span><span>Annamalai University, Chidambaram</span></div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <div class="footer-copy">© 2025 TalentLens. Made with <span>♥</span> in India.</div>
+      </div>
+    </footer>
+  </div>
+</div>
+
+<!-- CLEAR MODAL -->
+<div class="modal-overlay" id="clearModal">
+  <div class="modal-box" style="max-width:420px;text-align:center">
+    <div style="font-size:3rem;margin-bottom:1rem">🗑</div>
+    <div class="modal-title">Clear Applicant List?</div>
+    <div style="color:var(--muted2);font-size:0.85rem;margin:0.5rem 0 1.5rem;line-height:1.6">
+      This will remove all <strong id="clearCoName">—</strong> applicants.<br>
+      <span style="color:var(--rose);font-size:0.78rem">This action cannot be undone.</span>
+    </div>
+    <div style="display:flex;gap:0.75rem;justify-content:center">
+      <button class="btn-cancel-modal" onclick="closeClearModal()" style="flex:1">Cancel</button>
+      <button class="btn-send-mail" onclick="confirmClear()"
+        style="flex:1;background:linear-gradient(135deg,var(--rose),#be123c);box-shadow:0 4px 16px rgba(244,63,94,0.3)">
+        Yes, Clear All
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- EMAIL MODAL -->
+<div class="modal-overlay" id="emailModal">
+  <div class="modal-box" style="max-height:90vh;overflow-y:auto">
+    <div class="modal-close" onclick="closeEmailModal()">✕</div>
+    <div class="modal-title" id="modalTitle">Send Decision Email</div>
+    <div class="modal-sub" id="modalSub">Preview the email before sending</div>
+
+    <div id="ejsSetupPanel" class="setup-panel">
+      <div class="setup-panel-title">⚙ EmailJS Configuration <span style="font-weight:400;color:var(--muted);font-family:Satoshi,sans-serif;text-transform:none;letter-spacing:0">(one-time setup)</span></div>
+      <div class="setup-row">
+        <input class="setup-input" id="ejsPublicKey" placeholder="Public Key (e.g. abc123XYZ)">
+        <input class="setup-input" id="ejsServiceId" placeholder="Service ID (e.g. service_xxxx)">
+      </div>
+      <div class="setup-row full">
+        <input class="setup-input" id="ejsTemplateId" placeholder="Template ID (e.g. template_xxxx)">
+      </div>
+      <div class="setup-row full">
+        <input class="setup-input" id="ejsFromName" placeholder="Sender name (e.g. TalentLens HR Team)">
+      </div>
+      <div class="setup-hint">
+        🔑 Free keys at <a href="https://www.emailjs.com" target="_blank">emailjs.com</a>
+        → Template variables: <code style="color:#a5b4fc">{{to_email}}</code> <code style="color:#a5b4fc">{{to_name}}</code> <code style="color:#a5b4fc">{{subject}}</code> <code style="color:#a5b4fc">{{message}}</code>
+        <br><span id="ejsConfigStatus" style="color:var(--mint);display:none">✅ Saved for this session</span>
+      </div>
+      <div style="margin-top:0.7rem;display:flex;gap:0.5rem">
+        <button class="btn-send-mail btn-send-selected" style="flex:none;padding:0.5rem 1.1rem;font-size:0.78rem" onclick="saveEjsConfig()">Save Config</button>
+        <span class="setup-toggle" onclick="toggleSetup()">▲ Hide setup</span>
+      </div>
+    </div>
+    <span class="setup-toggle" id="showSetupToggle" style="display:none" onclick="toggleSetup()">⚙ Show email setup</span>
+
+    <div id="emailPreviewSection">
+      <div class="email-field"><div class="email-label">To</div><div class="email-val" id="modalTo">—</div></div>
+      <div class="email-field"><div class="email-label">Subject</div><div class="email-val" id="modalSubject">—</div></div>
+      <div class="email-preview" id="modalBody">—</div>
+    </div>
+
+    <div class="sending-state" id="sendingState">
+      <div class="sending-anim">📨</div>
+      <div class="sending-txt">Sending email to candidate…</div>
+    </div>
+    <div class="sent-success" id="sentSuccess">
+      <div class="sent-ico">✅</div>
+      <div class="sent-msg">Email sent successfully!</div>
+      <div class="sent-detail" id="sentDetail">—</div>
+    </div>
+    <div class="sent-error" id="sentError">
+      <div class="sent-error-msg">⚠ Email could not be sent</div>
+      <div class="sent-error-detail" id="sentErrorDetail">—</div>
+    </div>
+
+    <div class="modal-actions" id="modalActions">
+      <button class="btn-cancel-modal" onclick="closeEmailModal()">Cancel</button>
+      <button class="btn-send-mail" id="modalSendBtn" onclick="sendEmail()">Send Email</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast"></div>
+
+<script src="/static/js/main.js"></script>
+</body>
+</html>
